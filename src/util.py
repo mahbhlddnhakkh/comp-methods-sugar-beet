@@ -3,6 +3,7 @@ from timeit import default_timer as timer
 from datetime import timedelta
 import numpy as np
 from src.config import *
+from matplotlib import pyplot as plt
 
 def do_rand(shape: tuple, v_min, v_max) -> np.ndarray:
     '''
@@ -49,7 +50,7 @@ def print_result_simple(header: str, res: tuple, m: np.ndarray) -> None:
     '''
     Prints the result graphically
     '''
-    print(header, "за", "%.3f" % res[1], "секунд", ": S = " + round_decimals_s % res[0][1], ", выбор этапов:", res[0][0] + 1)
+    print(header, "за", round_decimals_time % res[1], "секунд", ": S = " + round_decimals_s % res[0][1], ", выбор этапов:", res[0][0] + 1)
     n = m.shape[0]
     for i in range(n):
         for j in range(n):
@@ -63,7 +64,7 @@ def print_result(header: str, res) -> None:
     '''
     Same as print_result_simple, but prints only time measure and S
     '''
-    print(header, "за", "%.3f" % res[1], "секунд", ": S = " + round_decimals_s % res[0][1])
+    print(header, "за", round_decimals_time % res[1], "секунд", ": S = " + round_decimals_s % res[0][1])
 
 def test_file_write(file_path: str) -> bool:
     '''
@@ -84,6 +85,32 @@ def write_exp_results_to_file(file_path: str, res: List[tuple]) -> None:
             f.write(str(exp[0]))
             f.write(' ' + str(exp[1]))
             for i in range(2, len(exp)):
-                format_str = "%.3f" if i % 2 == 0 else round_decimals_s
+                format_str = round_decimals_time if i % 2 == 0 else round_decimals_s
                 f.write(' ' + format_str % exp[i])
             f.write('\n')
+
+def display_graph(res: List[tuple]) -> None:
+    '''
+    Display graph using matplotlib
+    '''
+
+    def display_graph_iterator(label: str, i: int, tmp: np.array):
+        plt.plot(tmp[:, i], tmp[:, i+1], "o", label=label)
+
+    tmp: np.array = np.array(res)
+    plt.xlabel("t")
+    plt.ylabel("S")
+    i: int = 2
+    display_graph_iterator("Венгерский алгоритм (максимум)", i, tmp)
+    i+=2
+    display_graph_iterator("Венгерский алгоритм (минимум)", i, tmp)
+    i+=2
+    display_graph_iterator("Жадный алгоритм", i, tmp)
+    i+=2
+    display_graph_iterator("Бережливый алгоритм", i, tmp)
+    i+=2
+    display_graph_iterator("Бережливо-жадный алгоритм", i, tmp)
+    i+=2
+    display_graph_iterator("Жадно-бережливый алгоритм", i, tmp)
+    plt.legend()
+    plt.show()

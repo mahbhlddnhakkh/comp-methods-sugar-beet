@@ -99,6 +99,7 @@ def option_experiment_ripening() -> None:
         convert_to_p_matrix(m)
         exp_res[i] = advanced_experiment(m, theta)
     write_exp_results_to_file(output_path, exp_res)
+    display_graph(exp_res)
 
 def option_experiment_no_ripening() -> None:
     '''
@@ -137,4 +138,14 @@ def option_experiment_no_ripening() -> None:
         convert_to_p_matrix(m)
         exp_res[i] = advanced_experiment(m, theta)
     write_exp_results_to_file(output_path, exp_res)
+    display_graph(exp_res)
 
+def option_show_graph():
+    file_path: str = str(input("Введите путь к файлу с экспериментами (по умолчанию output.txt)") or "output.txt")
+    res: List[tuple] = []
+    with open(file_path, "r") as f:
+        for line in f:
+            tmp = line.strip().split(' ')
+            tmp = tuple([float(e) for e in tmp])
+            res.append(tmp)
+    display_graph(res)

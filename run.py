@@ -10,6 +10,10 @@ def main() -> None:
         {
             "text": "Эксперименты",
             "value": option_experiment
+        },
+        {
+            "text": "Показать график из файла",
+            "value": option_show_graph
         }
     ))()
 

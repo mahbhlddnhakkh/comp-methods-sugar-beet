@@ -4,3 +4,5 @@ mu_div: int = 3
 round_decimals_s_int: int = 7
 # same as round_decimals_s_int but for the strings
 round_decimals_s: str = "%." + str(round_decimals_s_int) + "f"
+# Show only first X decimals for the time
+round_decimals_time = "%.4f"
