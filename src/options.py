@@ -35,7 +35,6 @@ def option_manual() -> None:
         }
     ))
     if (not is_p):
-        matrix = convert_to_p_matrix(matrix)
         convert_to_p_matrix(matrix)
     simple_experiment(matrix)
 
