@@ -14,7 +14,6 @@ def convert_to_p_matrix(m: np.ndarray) -> None:
     n: int = m.shape[0]
     for i in range(1, n):
         m[:, i] = m[:, i] * m[:, i-1]
-    
 
 def hungarian(m: np.ndarray, maximize: bool = True) -> Tuple[np.array, float]:
     '''
@@ -43,7 +42,6 @@ def greedy_iteration(m: np.ndarray, reserved: np.array, col_ind: np.array, ind_o
             j += 1
         col_ind[ind_sorted[j]] = i + ind_offset
         reserved[ind_sorted[j]] = True
-
 
 def greedy(m: np.ndarray) -> Tuple[np.array, float]:
     '''

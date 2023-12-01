@@ -1,9 +1,76 @@
 from typing import Tuple, Dict, List
-from timeit import default_timer as timer
-from datetime import timedelta
 import numpy as np
 from src.config import *
 from matplotlib import pyplot as plt
+
+class exp_res_props:
+    '''
+    Represents props of advanced experiment
+    '''
+    n: int = 0
+    theta: int = 0
+    exp_count: int = 0
+    # size = (n, algs_count) ; stores avarage S (for every experiment) for each algorightm on each phase
+    phase_avarages: List[List[float]] = None
+    # size = (exp_count, algs_count) ; stores S of each algorithm for each experiment
+    exp_s_res: List[List[float]] = None
+
+    def dump_to_file(self, file_path: str) -> None:
+        '''
+        Dumps properties to file
+        '''
+        with open(file_path, "w") as f:
+            f.write(str(self.n) + ' ' + str(self.exp_count) + ' ' + str(self.theta) + '\n')
+            for i in range(self.n):
+                f.write(' '.join(list(map(str, self.phase_avarages[i]))) + '\n')
+            for i in range(self.exp_count):
+                f.write(' '.join(list(map(str, self.exp_s_res[i]))) + '\n')
+
+    def get_from_file(self, file_path: str) -> None:
+        '''
+        Gets properties from file
+        '''
+        with open(file_path, "r") as f:
+            line: list = f.readline().strip().split(' ')
+            self.n = int(line[0])
+            self.exp_count = int(line[1])
+            self.theta = int(line[2])
+            self.phase_avarages = [None] * self.n
+            for i in range(self.n):
+                line: list = f.readline().strip().split(' ')
+                self.phase_avarages[i] = list(map(float, line))
+            self.exp_s_res = [None] * self.exp_count
+            for i in range(self.exp_count):
+                line: list = f.readline().strip().split(' ')
+                self.exp_s_res[i] = list(map(float, line))
+
+    def display(self) -> None:
+        '''
+        Write some analytics and draws graph
+        '''
+        def display_iteration(self, label: str, i: int, x_arr, y_arr: np.array):
+            plt.plot(x_arr, y_arr[:, i], label=label)
+
+        avg_s: list = self.phase_avarages[-1]
+        print("Средние S:")
+        for i in range(algs_count):
+            print(algs_names[i] + ':', avg_s[i])
+        print()
+        print("Усреднённая погрешность S:")
+        avg_diff: list = [None] * algs_count
+        for i in range(algs_count):
+            avg_diff[i] = (avg_s[0] - avg_s[i]) / avg_s[0]
+            print(algs_names[i] + ':', avg_diff[i])
+
+        plt.title("Динамика S по различным планам переработки")
+        plt.xlabel("phase")
+        plt.ylabel("S")
+        x_arr = range(self.n)
+        y_arr = np.array(self.phase_avarages)
+        for i in range(algs_count):
+            display_iteration(self, algs_names[i], i, x_arr, y_arr)
+        plt.legend()
+        plt.show()
 
 def do_rand(shape: tuple, v_min, v_max) -> np.ndarray:
     '''
@@ -35,36 +102,25 @@ def create_option(header: str, d: Tuple[Dict[str, object]]) -> object:
     else:
         raise Exception("choice must be between 1 and len(d)")
 
-def measure_time(func, *args, **kwargs) -> tuple:
-    '''
-    measures time
-    do func(*args, **kwargs)
-    return tuple(res, time_passed)
-    '''
-    start = timer()
-    res = func(*args, **kwargs)
-    end = timer()
-    return (res, end - start)
-
 def print_result_simple(header: str, res: tuple, m: np.ndarray) -> None:
     '''
-    Prints the result graphically
+    Prints the result
     '''
-    print(header, "за", round_decimals_time % res[1], "секунд", ": S = " + round_decimals_s % res[0][1], ", выбор этапов:", res[0][0] + 1)
+    print(header, ": S = " + round_decimals_s % res[1], ", выбор этапов:", res[0] + 1)
     n = m.shape[0]
     for i in range(n):
         for j in range(n):
-            if (res[0][0][i] == j):
+            if (res[0][i] == j):
                 print("[", round_decimals_s % m[i][j], "]", sep='', end='\t')
             else:
                 print(round_decimals_s % m[i][j], end='\t')
         print()
 
-def print_result(header: str, res) -> None:
+def print_result(header: str, res: tuple) -> None:
     '''
-    Same as print_result_simple, but prints only time measure and S
+    Same as print_result_simple, but prints only S
     '''
-    print(header, "за", round_decimals_time % res[1], "секунд", ": S = " + round_decimals_s % res[0][1])
+    print(header, ": S = " + round_decimals_s % res[1])
 
 def test_file_write(file_path: str) -> bool:
     '''
@@ -74,43 +130,3 @@ def test_file_write(file_path: str) -> bool:
     res: bool = f.writable()
     f.close()
     return res
-
-def write_exp_results_to_file(file_path: str, res: List[tuple]) -> None:
-    '''
-    Writes experiments results to file file_path
-    res is a list of experiments results
-    '''
-    with open(file_path, "w") as f:
-        for exp in res:
-            f.write(str(exp[0]))
-            f.write(' ' + str(exp[1]))
-            for i in range(2, len(exp)):
-                format_str = round_decimals_time if i % 2 == 0 else round_decimals_s
-                f.write(' ' + format_str % exp[i])
-            f.write('\n')
-
-def display_graph(res: List[tuple]) -> None:
-    '''
-    Display graph using matplotlib
-    '''
-
-    def display_graph_iterator(label: str, i: int, tmp: np.array):
-        plt.plot(tmp[:, i], tmp[:, i+1], "o", label=label)
-
-    tmp: np.array = np.array(res)
-    plt.xlabel("t")
-    plt.ylabel("S")
-    i: int = 2
-    display_graph_iterator("Венгерский алгоритм (максимум)", i, tmp)
-    i+=2
-    display_graph_iterator("Венгерский алгоритм (минимум)", i, tmp)
-    i+=2
-    display_graph_iterator("Жадный алгоритм", i, tmp)
-    i+=2
-    display_graph_iterator("Бережливый алгоритм", i, tmp)
-    i+=2
-    display_graph_iterator("Бережливо-жадный алгоритм", i, tmp)
-    i+=2
-    display_graph_iterator("Жадно-бережливый алгоритм", i, tmp)
-    plt.legend()
-    plt.show()

@@ -93,13 +93,18 @@ def option_experiment_ripening() -> None:
     output_path: str = str(input("Введите путь к файлу, куда будет записан результат экспериментов (формат txt, если файл существует, его содержимое будет стёрто) (по умолчанию output.txt): ") or "output.txt")
     if (not test_file_write(output_path)):
         raise Exception("Cannot write to file " + output_path)
-    exp_res: list = [None] * exp_count
+    exp_res: exp_res_props = exp_res_props()
+    exp_res.n = n
+    exp_res.theta = theta
+    exp_res.exp_count = exp_count
+    exp_res.exp_s_res = [[None] * algs_count for i in range(exp_count)]
+    exp_res.phase_avarages = [[0.0] * algs_count for i in range(n)]
     for i in range(exp_count):
         m: np.ndarray = generate_matrix_main_ripening(n, (a_i_min, a_i_max), (b_i_j_min_1, b_i_j_max_1), (b_i_j_min_2, b_i_j_max_2))
         convert_to_p_matrix(m)
-        exp_res[i] = advanced_experiment(m, theta)
-    write_exp_results_to_file(output_path, exp_res)
-    display_graph(exp_res)
+        advanced_experiment(m, exp_res, i)
+    exp_res.dump_to_file(output_path)
+    exp_res.display()
 
 def option_experiment_no_ripening() -> None:
     '''
@@ -132,20 +137,27 @@ def option_experiment_no_ripening() -> None:
     output_path: str = str(input("Введите путь к файлу, куда будет записан результат экспериментов (формат txt, если файл существует, его содержимое будет стёрто) (по умолчанию output.txt): ") or "output.txt")
     if (not test_file_write(output_path)):
         raise Exception("Cannot write to file " + output_path)
-    exp_res: list = [None] * exp_count
+    exp_res: exp_res_props = exp_res_props()
+    exp_res.n = n
+    exp_res.theta = theta
+    exp_res.exp_count = exp_count
+    exp_res.exp_s_res = [[None] * algs_count for i in range(exp_count)]
+    exp_res.phase_avarages = [[0.0] * algs_count for i in range(n)]
     for i in range(exp_count):
         m: np.ndarray = generate_matrix_main(n, (a_i_min, a_i_max), (b_i_j_min, b_i_j_max))
         convert_to_p_matrix(m)
-        exp_res[i] = advanced_experiment(m, theta)
-    write_exp_results_to_file(output_path, exp_res)
-    display_graph(exp_res)
+        advanced_experiment(m, exp_res, i)
+    exp_res.dump_to_file(output_path)
+    exp_res.display()
 
-def option_show_graph():
+def option_show_graph() -> None:
+    '''
+    Option when:
+        "Выберите:"
+    Selected:
+        "Проанализировать эксперименты из файла"
+    '''
     file_path: str = str(input("Введите путь к файлу с экспериментами (по умолчанию output.txt)") or "output.txt")
-    res: List[tuple] = []
-    with open(file_path, "r") as f:
-        for line in f:
-            tmp = line.strip().split(' ')
-            tmp = tuple([float(e) for e in tmp])
-            res.append(tmp)
-    display_graph(res)
+    exp_res: exp_res_props = exp_res_props()
+    exp_res.get_from_file(file_path)
+    exp_res.display()
