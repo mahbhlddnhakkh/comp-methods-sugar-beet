@@ -14,6 +14,10 @@ def main() -> None:
         {
             "text": "Проанализировать эксперименты из файла",
             "value": option_show_graph
+        },
+        {
+            "text": "Проанализировать относительную погрешность из файлов экспериментов",
+            "value": option_analyze_avarage_errors
         }
     ))()
 

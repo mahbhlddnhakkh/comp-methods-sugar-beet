@@ -2,6 +2,7 @@ from typing import Tuple, Dict, List
 import numpy as np
 from src.config import *
 from matplotlib import pyplot as plt
+import os
 
 class exp_res_props:
     '''
@@ -57,11 +58,9 @@ class exp_res_props:
             print(algs_names[i] + ':', avg_s[i])
         print()
         print("Усреднённая погрешность S:")
-        avg_diff: list = [None] * algs_count
+        avg_diff: list = self.get_avarage_error()
         for i in range(algs_count):
-            avg_diff[i] = (avg_s[0] - avg_s[i]) / avg_s[0]
             print(algs_names[i] + ':', avg_diff[i])
-
         plt.title("Динамика S по различным планам переработки")
         plt.xlabel("phase")
         plt.ylabel("S")
@@ -71,6 +70,17 @@ class exp_res_props:
             display_iteration(self, algs_names[i], i, x_arr, y_arr)
         plt.legend()
         plt.show()
+    
+    def get_avarage_error(self) -> List[float]:
+        '''
+        Returns list of avarage errors
+        '''
+        avg_s: list = self.phase_avarages[-1]
+        avg_diff: list = [None] * algs_count
+        for i in range(algs_count):
+            avg_diff[i] = (avg_s[0] - avg_s[i]) / avg_s[0]
+        return avg_diff
+
 
 def do_rand(shape: tuple, v_min, v_max) -> np.ndarray:
     '''
@@ -130,3 +140,21 @@ def test_file_write(file_path: str) -> bool:
     res: bool = f.writable()
     f.close()
     return res
+
+def test_read_file(file_path: str) -> bool:
+    '''
+    Tests if able to read file
+    '''
+    return os.access(file_path, os.R_OK)
+
+
+def pretty_2d_table(arr: List[List[str]]) -> str:
+    '''
+    https://stackoverflow.com/a/13214945
+    Returns string table formatted nicely
+    '''
+    s = [[str(e) for e in row] for row in arr]
+    lens = [max(map(len, col)) for col in zip(*s)]
+    fmt = '\t'.join('{{:{}}}'.format(x) for x in lens)
+    table = [fmt.format(*row) for row in s]
+    return '\n'.join(table)

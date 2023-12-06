@@ -191,3 +191,29 @@ def option_show_graph() -> None:
     exp_res: exp_res_props = exp_res_props()
     exp_res.get_from_file(file_path)
     exp_res.display()
+
+def option_analyze_avarage_errors() -> None:
+    '''
+    Option when:
+        "Выберите:"
+    Selected:
+        "Проанализировать относительную погрешность из файлов экспериментов"
+    '''
+    files_count: int = int(input("Введите количество файлов с экспериментами (по умолчанию 1): ") or 1)
+    result: List[List[str]] = [None] * (files_count + 1)
+    result[0] = algs_names
+    if (files_count < 1):
+        raise Exception("files_count < 1")
+    files: List[str] = [None] * files_count
+    for i in range(files_count):
+        files[i] = str(input("Введите файл с экспериментом " + str(i+1) + " (по умолчанию output" + str(i+1) + ".txt): ") or "output" + str(i+1) + ".txt")
+        exp_res: exp_res_props = exp_res_props()
+        exp_res.get_from_file(files[i])
+        result[i+1] = list(map(str, exp_res.get_avarage_error()))
+    output_path: str = str(input("Введите путь к файлу, куда будет записан результат анализа (формат txt, если файл существует, его содержимое будет стёрто) (по умолчанию output.txt): ") or "output.txt")
+    if (not test_file_write(output_path)):
+        raise Exception("Cannot write to file " + output_path)
+    result_str = pretty_2d_table(result)
+    with open(output_path, "w") as f:
+        f.write(result_str)
+    print(result_str)
