@@ -4,6 +4,7 @@ from src.algorithms import convert_to_p_matrix
 import numpy as np
 from typing import List
 from src.config import *
+import sys
 
 def option_manual() -> None:
     '''
@@ -17,13 +18,14 @@ def option_manual() -> None:
     print("От 2-ой строки до n+1 строки: матрица размером n на n. Формат матрицы: столбцы разделять пробелом, строки - \\n (т.е. новой строкой)")
     filename: str = (input("Введите путь к файлу: ") or "input.txt")
     matrix: np.ndarray = None
+    lines: List[str] = None
     with open(filename, "r") as f:
-        lines: List[str] = [e.strip() for e in f.readlines()]
-        n: int = int(lines[0])
-        if (n <= 0):
-            raise Expeption("n <= 0")
-        lines.pop(0)
-        matrix = np.fromstring(string=' '.join(lines), dtype=float, count=n*n, sep=' ').reshape(n, n)
+        lines = [e.strip() for e in f.readlines()]
+    n: int = int(lines[0])
+    if (n <= 0):
+        raise Expeption("n <= 0")
+    lines.pop(0)
+    matrix = np.fromstring(string=' '.join(lines), dtype=float, count=n*n, sep=' ').reshape(n, n)
     is_p: bool = create_option("Какая это матрица?", (
         {
             "text": "Это матрица P (преобразований делать не нужно)",
@@ -63,26 +65,42 @@ def option_experiment_ripening() -> None:
     Selected:
         "Да, использовать"
     '''
-    n: int = int(input("Введите n: "))
-    if (n <= 0):
-        raise Expeption("n <= 0")
+    n: int = int(input("Введите n (n >= 2): "))
+    if (n < 2):
+        raise Expeption("n < 2")
     exp_count: int = int(input("Введите количество экспериментов: "))
     if (exp_count <= 0):
         raise Expeption("exp_count <= 0")
-    a_i_min: float = float(input("Введите минимальный a_i > 0: "))
-    a_i_max: float = float(input("Введите максимальный a_i > 0: "))
+    a_i_min: float = float(input("Введите минимальный a_i > 0 (границы можно включить*): "))
+    a_i_max: float = float(input("Введите максимальный a_i > 0 (границы можно включить*): "))
+    if (a_i_min == 0.0):
+        a_i_min = sys.float_info.epsilon
+    if (a_i_max == 0.0):
+        a_i_max = sys.float_info.epsilon
     if (a_i_min <= 0.0 or a_i_max <= 0.0):
         raise Exception("a_i must be greater than 0")
     if (a_i_min > a_i_max):
         raise Exception("a_i_min > a_i_max")
-    b_i_j_min_1: float = float(input("Введите минимальный b_i_j > 1 во время дозаривания: "))
-    b_i_j_max_1: float = float(input("Введите максимальный b_i_j > 1 во время дозаривания: "))
+    b_i_j_min_1: float = float(input("Введите минимальный b_i_j > 1 во время дозаривания (границы можно включить*): "))
+    b_i_j_max_1: float = float(input("Введите максимальный b_i_j > 1 во время дозаривания (границы можно включить*): "))
+    if (b_i_j_min_1 == 1.0):
+        b_i_j_min_1 += sys.float_info.epsilon
+    if (b_i_j_max_1 == 1.0):
+        b_i_j_max_1 += sys.float_info.epsilon
     if (b_i_j_min_1 <= 1.0 or b_i_j_max_1 <= 1.0):
         raise Exception("b_i_j while ripening must be greater than 1")
     if (b_i_j_min_1 > b_i_j_max_1):
         raise Exception("b_i_j_min_1 > b_i_j_max_1")
-    b_i_j_min_2: float = float(input("Введите минимальный 0 < b_i_j < 1 после дозаривания: "))
-    b_i_j_max_2: float = float(input("Введите максимальный 0 < b_i_j < 1 после дозаривания: "))
+    b_i_j_min_2: float = float(input("Введите минимальный 0 < b_i_j < 1 после дозаривания (границы можно включить*): "))
+    b_i_j_max_2: float = float(input("Введите максимальный 0 < b_i_j < 1 после дозаривания (границы можно включить*): "))
+    if (b_i_j_max_2 == 1.0):
+        b_i_j_max_2 -= sys.float_info.epsilon
+    if (b_i_j_min_2 == 1.0):
+        b_i_j_min_2 -= sys.float_info.epsilon
+    if (b_i_j_min_2 == 0.0):
+        b_i_j_min_2 = sys.float_info.epsilon
+    if (b_i_j_max_2 == 0.0):
+        b_i_j_max_2 = sys.float_info.epsilon
     if (b_i_j_min_2 >= 1.0 or b_i_j_min_2 <= 0.0 or b_i_j_max_2 >= 1.0 or b_i_j_max_2 <= 0.0):
         raise Exception("b_i_j after ripening must be between 0 and 1")
     if (b_i_j_min_2 > b_i_j_max_2):
@@ -113,20 +131,32 @@ def option_experiment_no_ripening() -> None:
     Selected:
         "Нет, не использовать"
     '''
-    n: int = int(input("Введите n: "))
-    if (n <= 0):
-        raise Expeption("n <= 0")
+    n: int = int(input("Введите n (n >= 2): "))
+    if (n < 2):
+        raise Expeption("n < 2")
     exp_count: int = int(input("Введите количество экспериментов: "))
     if (exp_count <= 0):
         raise Expeption("exp_count <= 0")
-    a_i_min: float = float(input("Введите минимальный a_i > 0: "))
-    a_i_max: float = float(input("Введите максимальный a_i > 0: "))
+    a_i_min: float = float(input("Введите минимальный a_i > 0 (границы можно включить*): "))
+    a_i_max: float = float(input("Введите максимальный a_i > 0 (границы можно включить*): "))
+    if (a_i_min == 0.0):
+        a_i_min = sys.float_info.epsilon
+    if (a_i_max == 0.0):
+        a_i_max = sys.float_info.epsilon
     if (a_i_min <= 0.0 or a_i_max <= 0.0):
         raise Exception("a_i must be greater than 0")
     if (a_i_min > a_i_max):
         raise Exception("a_i_min > a_i_max")
-    b_i_j_min: float = float(input("Введите минимальный 0 < b_i_j < 1: "))
-    b_i_j_max: float = float(input("Введите максимальный 0 < b_i_j < 1: "))
+    b_i_j_min: float = float(input("Введите минимальный 0 < b_i_j < 1 (границы можно включить*): "))
+    b_i_j_max: float = float(input("Введите максимальный 0 < b_i_j < 1 (границы можно включить*): "))
+    if (b_i_j_max == 1.0):
+        b_i_j_max -= sys.float_info.epsilon
+    if (b_i_j_min == 1.0):
+        b_i_j_min -= sys.float_info.epsilon
+    if (b_i_j_min == 0.0):
+        b_i_j_min = sys.float_info.epsilon
+    if (b_i_j_max == 0.0):
+        b_i_j_max = sys.float_info.epsilon
     if (b_i_j_min >= 1.0 or b_i_j_min <= 0.0 or b_i_j_max >= 1.0 or b_i_j_max <= 0.0):
         raise Exception("b_i_j must be between 0 and 1")
     if (b_i_j_min > b_i_j_max):
@@ -157,7 +187,7 @@ def option_show_graph() -> None:
     Selected:
         "Проанализировать эксперименты из файла"
     '''
-    file_path: str = str(input("Введите путь к файлу с экспериментами (по умолчанию output.txt)") or "output.txt")
+    file_path: str = str(input("Введите путь к файлу с экспериментами (по умолчанию output.txt): ") or "output.txt")
     exp_res: exp_res_props = exp_res_props()
     exp_res.get_from_file(file_path)
     exp_res.display()
