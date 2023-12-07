@@ -192,7 +192,7 @@ def option_show_graph() -> None:
     exp_res.get_from_file(file_path)
     exp_res.display()
 
-def option_analyze_avarage_errors() -> None:
+def option_analyze_average_errors() -> None:
     '''
     Option when:
         "Выберите:"

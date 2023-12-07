@@ -17,7 +17,7 @@ def main() -> None:
         },
         {
             "text": "Проанализировать относительную погрешность из файлов экспериментов",
-            "value": option_analyze_avarage_errors
+            "value": option_analyze_average_errors
         }
     ))()
 
