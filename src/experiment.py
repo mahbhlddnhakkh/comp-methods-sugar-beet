@@ -13,7 +13,7 @@ def simple_experiment(m: np.ndarray) -> None:
     print_result_simple(algs_names[1], hungarian(m, False), m)
     print_result_simple(algs_names[2], greedy(m), m)
     print_result_simple(algs_names[3], lean(m), m)
-    theta: int = int(input("Введите theta для бережливо-жадного и жадно-бережливого алгоритмов (от 1 до n): ") or math.floor(m.shape[0] / mu_div))
+    theta: int = int(input("Введите theta для бережливо-жадного и жадно-бережливого алгоритмов (от 1 до n) (по умолчанию [n/%d]): " % mu_div) or math.floor(m.shape[0] / mu_div))
     print_result_simple(algs_names[4] + ", theta = " + str(theta), lean_greedy(m, theta), m)
     print_result_simple(algs_names[5] + ", theta = " + str(theta), greedy_lean(m, theta), m)
 

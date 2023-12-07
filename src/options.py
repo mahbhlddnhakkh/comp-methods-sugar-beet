@@ -23,7 +23,7 @@ def option_manual() -> None:
         lines = [e.strip() for e in f.readlines()]
     n: int = int(lines[0])
     if (n <= 0):
-        raise Expeption("n <= 0")
+        raise Exception("n <= 0")
     lines.pop(0)
     matrix = np.fromstring(string=' '.join(lines), dtype=float, count=n*n, sep=' ').reshape(n, n)
     is_p: bool = create_option("Какая это матрица?", (
@@ -67,10 +67,10 @@ def option_experiment_ripening() -> None:
     '''
     n: int = int(input("Введите n (n >= 2): "))
     if (n < 2):
-        raise Expeption("n < 2")
+        raise Exception("n < 2")
     exp_count: int = int(input("Введите количество экспериментов: "))
     if (exp_count <= 0):
-        raise Expeption("exp_count <= 0")
+        raise Exception("exp_count <= 0")
     a_i_min: float = float(input("Введите минимальный a_i > 0 (границы можно включить*): "))
     a_i_max: float = float(input("Введите максимальный a_i > 0 (границы можно включить*): "))
     if (a_i_min == 0.0):
@@ -133,10 +133,10 @@ def option_experiment_no_ripening() -> None:
     '''
     n: int = int(input("Введите n (n >= 2): "))
     if (n < 2):
-        raise Expeption("n < 2")
+        raise Exception("n < 2")
     exp_count: int = int(input("Введите количество экспериментов: "))
     if (exp_count <= 0):
-        raise Expeption("exp_count <= 0")
+        raise Exception("exp_count <= 0")
     a_i_min: float = float(input("Введите минимальный a_i > 0 (границы можно включить*): "))
     a_i_max: float = float(input("Введите максимальный a_i > 0 (границы можно включить*): "))
     if (a_i_min == 0.0):
@@ -214,6 +214,6 @@ def option_analyze_avarage_errors() -> None:
     if (not test_file_write(output_path)):
         raise Exception("Cannot write to file " + output_path)
     result_str = pretty_2d_table(result)
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(result_str)
     print(result_str)
