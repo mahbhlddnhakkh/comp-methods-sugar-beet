@@ -50,13 +50,12 @@ class exp_res_props:
         Write some analytics and draws graph
         '''
         def display_iteration(self, label: str, i: int, x_arr, y_arr: np.array):
-            plt.plot(x_arr, y_arr[:, i], label=label)
+            plt.plot(x_arr, y_arr[i], label=label)
 
         avg_s: list = self.phase_avarages[-1]
         print("Средние S:")
         for i in range(algs_count):
             print(algs_names[i] + ':', avg_s[i])
-        print()
         print("Усреднённая погрешность S:")
         avg_diff: list = self.get_avarage_error()
         for i in range(algs_count):
@@ -65,7 +64,7 @@ class exp_res_props:
         plt.xlabel("phase")
         plt.ylabel("S")
         x_arr = range(self.n)
-        y_arr = np.array(self.phase_avarages)
+        y_arr = np.array(self.phase_avarages).transpose()
         for i in range(algs_count):
             display_iteration(self, algs_names[i], i, x_arr, y_arr)
         plt.legend()

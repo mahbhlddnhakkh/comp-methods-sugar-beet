@@ -121,6 +121,9 @@ def option_experiment_ripening() -> None:
         m: np.ndarray = generate_matrix_main_ripening(n, (a_i_min, a_i_max), (b_i_j_min_1, b_i_j_max_1), (b_i_j_min_2, b_i_j_max_2))
         convert_to_p_matrix(m)
         advanced_experiment(m, exp_res, i)
+    for e in exp_res.phase_avarages:
+        for i in range(len(e)):
+            e[i] /= exp_count
     exp_res.dump_to_file(output_path)
     exp_res.display()
 
@@ -177,6 +180,9 @@ def option_experiment_no_ripening() -> None:
         m: np.ndarray = generate_matrix_main(n, (a_i_min, a_i_max), (b_i_j_min, b_i_j_max))
         convert_to_p_matrix(m)
         advanced_experiment(m, exp_res, i)
+    for e in exp_res.phase_avarages:
+        for i in range(len(e)):
+            e[i] /= exp_count
     exp_res.dump_to_file(output_path)
     exp_res.display()
 

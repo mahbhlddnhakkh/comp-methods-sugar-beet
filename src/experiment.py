@@ -30,12 +30,15 @@ def advanced_experiment(m: np.ndarray, exp_res: exp_res_props, exp_i: int) -> No
         '''
         n: int = m.shape[0]
         tmp: tuple = func(m, *args)
+        col_ind = tmp[0]
+        row_ind = np.argsort(col_ind)
+        col_ind = np.arange(n, dtype=int)
         exp_res.exp_s_res[exp_i][i] = tmp[1]
         phases: list = [None] * n
-        phases[0] = m[0][tmp[0][0]] / exp_res.exp_count
+        phases[0] = m[row_ind[0]][col_ind[0]]
         exp_res.phase_avarages[0][i] += phases[0]
         for k in range(1, n):
-           phases[k] = phases[k-1] + m[k][tmp[0][k]] / exp_res.exp_count
+           phases[k] = phases[k-1] + m[row_ind[k]][col_ind[k]]
            exp_res.phase_avarages[k][i] += phases[k]
         # print_result_simple(str(i), tmp, m)
 
